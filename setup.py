@@ -18,7 +18,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Min Chul Kim",
     author_email="minchulkim87@gmail.com",
-    url="https://minchulkim87.github.io/pandas_read_xml",
+    url="https://github.com/minchulkim87/pandas_read_xml",
     py_modules=["pandas_read_xml"],
     classifiers=[
         "Programming Language :: Python :: 3",
