@@ -22,7 +22,7 @@ setup(
     author="Min Chul Kim",
     author_email="minchulkim87@gmail.com",
     url="https://minchulkim87.github.io/pandas_read_xml",
-    packages=find_packages(),
+    py_modules=['pandas_read_xml'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
