@@ -10,9 +10,6 @@ source_root = Path(".")
 with (source_root / "README.md").open(encoding="utf-8") as fh:
     long_description = fh.read()
 
-with (source_root / "requirements.txt").open(encoding="utf-8") as f:
-    requirements = f.readlines()
-
 setup(
     name="pandas_read_xml",
     version=version,
