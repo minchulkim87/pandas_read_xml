@@ -22,13 +22,13 @@ setup(
     author="Min Chul Kim",
     author_email="minchulkim87@gmail.com",
     url="https://minchulkim87.github.io/pandas_read_xml",
-    py_modules=['pandas_read_xml'],
+    py_modules=["pandas_read_xml"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent"
+        "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     install_requires=[
         "numpy==1.18.3",
         "pandas==1.0.3",
@@ -37,5 +37,5 @@ setup(
         "pytz==2020.1",
         "six==1.14.0",
         "xmltodict==0.12.0",
-    ]
+    ],
 )
