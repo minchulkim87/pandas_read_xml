@@ -2,6 +2,8 @@
 
 A tool to help read XML files as pandas dataframes.
 
+See example in [Google Colab here](https://colab.research.google.com/github/minchulkim87/pandas_read_xml/blob/master/pandas_read_xml_example.ipynb)
+
 Isn't it annoying working with data in XML format? I think so. Take a look at this simple example.
 
 ```xml
@@ -49,7 +51,7 @@ pip install pandas_read_xml
 ## Import package
 
 ```python
-import pandas_read_xml
+import pandas_read_xml as pdx
 ```
 
 ## Read XML as pandas dataframe
@@ -57,7 +59,7 @@ import pandas_read_xml
 You will need to identify the path to the "root" tag in the XML from which you want to extract the data.
 
 ```python
-df = read_xml("test.xml", ['first-tag', 'second-tag', 'the-tag-you-want-as-root'])
+df = pdx.read_xml("test.xml", ['first-tag', 'second-tag', 'the-tag-you-want-as-root'])
 ```
 
 ### Real example.
@@ -68,7 +70,7 @@ Here is a real example taken from USPTO. It is one of their "daily diff" files f
 test_zip_path = 'https://bulkdata.uspto.gov/data/trademark/dailyxml/applications/apc200219.zip'
 root_key_list = ['trademark-applications-daily', 'application-information', 'file-segments', 'action-keys']
 
-df = read_xml(test_zip_path, root_key_list)
+df = pdx.read_xml(test_zip_path, root_key_list)
 ```
 
 # Auto Flatten
@@ -84,12 +86,26 @@ So, in this tool, I have also attempted to make a few different tools to separat
 A quick example from the same dataframe from USPTO above:
 
 ```python
+from pandas_read_xml import auto_separate_tables
+
 key_columns = ['action-key', 'case-file|serial-number']
 
 data = df.pipe(auto_separate_tables, key_columns)
 ```
 
 will separate out what the `auto_separate_tables` function guesses to be separate tables. The resulting `data` is a dictionary where the keys are the "table names" and the corresponding values are the pandas dataframes. Each of the separate tables will have the `key_columns` as common columns.
+
+You can see the list of separated tables by using python dictionary methods.
+
+```python
+data.keys()
+```
+
+And then view a table.
+
+```python
+data['classifications']
+```
 
 There are also other "smaller" functions that does parts of the job:
 
