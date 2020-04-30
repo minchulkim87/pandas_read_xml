@@ -62,6 +62,8 @@ You will need to identify the path to the "root" tag in the XML from which you w
 df = pdx.read_xml("test.xml", ['first-tag', 'second-tag', 'the-tag-you-want-as-root'])
 ```
 
+*Sometimes, the XML structure is such that pandas will treat rows vs columns in a way that we think are opposites. For these cases, the read_xml may fail. Try using `transpose=True` as an argument in such cases.
+
 ### Real example.
 
 Here is a real example taken from USPTO. It is one of their "daily diff" files for the US trademark applications data.

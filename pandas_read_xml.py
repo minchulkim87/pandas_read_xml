@@ -105,7 +105,7 @@ def read_xml(path: str, root_key_list: list, transpose=False) -> pd.DataFrame:
 # These are general functions to help deal with the tree-like structure (XML, JSON) that was read into the dataframe
 
 
-def do_nothing(df: pd.DataFrame, column) -> pd.DataFrame:
+def do_nothing(df: pd.DataFrame, column: str) -> pd.DataFrame:
     return df
 
 
@@ -122,12 +122,12 @@ def normalise(df: pd.DataFrame, column: str) -> pd.DataFrame:
             .drop(columns=[column]))
 
 
-def mixed_explode(df: pd.DataFrame, column) -> pd.DataFrame:
+def mixed_explode(df: pd.DataFrame, column: str) -> pd.DataFrame:
     explodeable = df[column].apply(lambda x: type(x)==list)
     return pd.concat([df.loc[explodeable, :].pipe(explode, column), df.loc[~explodeable, :]]).reset_index(drop=True)
 
 
-def mixed_normalise(df: pd.DataFrame, column) -> pd.DataFrame:
+def mixed_normalise(df: pd.DataFrame, column: str) -> pd.DataFrame:
     normalisable = df[column].apply(lambda x: (type(x)==dict) | (type(x)==collections.OrderedDict))
     return pd.concat([df.loc[normalisable, :].pipe(normalise, column),
                       df.loc[~normalisable, :]],
