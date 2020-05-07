@@ -2,7 +2,7 @@ from pathlib import Path
 from setuptools import setup
 from setuptools import find_packages
 
-version = "0.0.4"
+version = "0.0.5"
 description = "A tool to read XML files as pandas dataframes."
 
 source_root = Path(".")
@@ -27,12 +27,17 @@ setup(
     ],
     python_requires=">=3.6",
     install_requires=[
-        "numpy==1.18.3",
+        "certifi==2020.4.5.1",
+        "chardet==3.0.4",
+        "idna==2.9",
+        "numpy==1.18.4",
         "pandas==1.0.3",
         "pyarrow==0.17.0",
         "python-dateutil==2.8.1",
         "pytz==2020.1",
+        "requests==2.23.0",
         "six==1.14.0",
+        "urllib3==1.25.9",
         "xmltodict==0.12.0",
     ],
 )
