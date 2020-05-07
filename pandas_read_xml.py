@@ -83,7 +83,7 @@ def read_xml_files_in_double_zip_as_dataframe(zip_file: ZipFile, root_key_list: 
     ])
 
 
-def read_xml(path: str, root_key_list: Optional[list]=None, transpose=False: bool) -> pd.DataFrame:
+def read_xml(path: str, root_key_list: Optional[list]=None, transpose: bool=False) -> pd.DataFrame:
     if urllib.parse.urlparse(path).scheme in ['http', 'https']:
         if path.endswith('.xml'):
             return read_xml_as_dataframe(read_xml_from_url(path), root_key_list, transpose=transpose)
