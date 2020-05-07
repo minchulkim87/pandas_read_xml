@@ -6,7 +6,7 @@ import requests
 import urllib
 from zipfile import ZipFile
 import json
-from typing import Callable, Iterator
+from typing import Callable, Iterator, Optional
 import collections
 
 # installed packages
@@ -18,7 +18,7 @@ import xmltodict
 # These are very general functions to read xml data as dataframes
 
 
-def get_to_root_in_dict(the_dict: dict, root_key_list=None: list) -> dict:
+def get_to_root_in_dict(the_dict: dict, root_key_list: Optional[list]=None) -> dict:
     if not root_key_list:
         return the_dict
     elif len(root_key_list) > 1:
@@ -27,7 +27,7 @@ def get_to_root_in_dict(the_dict: dict, root_key_list=None: list) -> dict:
         return the_dict[root_key_list[0]]
 
 
-def read_xml_as_dataframe(xml: str, root_key_list=None: list, transpose=False: bool) -> pd.DataFrame:
+def read_xml_as_dataframe(xml: str, root_key_list: Optional[list]=None, transpose: bool=False) -> pd.DataFrame:
     if transpose:
         return pd.DataFrame(get_to_root_in_dict(xmltodict.parse(xml), root_key_list)).T
     else:
@@ -67,13 +67,13 @@ def get_zip_in_zip(zip_file: ZipFile, zip_file_name: str) -> ZipFile:
     return ZipFile(io.BytesIO(zip_file.read(zip_file_name)))
     
 
-def read_xml_files_in_zip_as_dataframe(zip_file: ZipFile, root_key_list=None: list, transpose=False: bool) -> pd.DataFrame:
+def read_xml_files_in_zip_as_dataframe(zip_file: ZipFile, root_key_list: Optional[list]=None, transpose: bool=False) -> pd.DataFrame:
     return pd.concat([read_xml_as_dataframe(read_xml_in_zip(zip_file, xml_file), root_key_list, transpose=transpose)
                       for xml_file in get_files_list_in_zip(zip_file, '.xml')],
                      sort=True, join='outer', ignore_index=True)
 
 
-def read_xml_files_in_double_zip_as_dataframe(zip_file: ZipFile, root_key_list=None: list, transpose=False: bool) -> pd.DataFrame:
+def read_xml_files_in_double_zip_as_dataframe(zip_file: ZipFile, root_key_list: Optional[list]=None, transpose: bool=False) -> pd.DataFrame:
     return pd.concat([
         read_xml_files_in_zip_as_dataframe(
             get_zip_in_zip(zip_file, sub_zip_file),
@@ -83,7 +83,7 @@ def read_xml_files_in_double_zip_as_dataframe(zip_file: ZipFile, root_key_list=N
     ])
 
 
-def read_xml(path: str, root_key_list=None: list, transpose=False: bool) -> pd.DataFrame:
+def read_xml(path: str, root_key_list: Optional[list]=None, transpose=False: bool) -> pd.DataFrame:
     if urllib.parse.urlparse(path).scheme in ['http', 'https']:
         if path.endswith('.xml'):
             return read_xml_as_dataframe(read_xml_from_url(path), root_key_list, transpose=transpose)
