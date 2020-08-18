@@ -70,7 +70,7 @@ def get_zip_in_zip(zip_file: ZipFile, zip_file_name: str) -> ZipFile:
 def read_xml_files_in_zip_as_dataframe(zip_file: ZipFile, root_key_list: Optional[list]=None, transpose: bool=False) -> pd.DataFrame:
     return pd.concat([read_xml_as_dataframe(read_xml_in_zip(zip_file, xml_file), root_key_list, transpose=transpose)
                       for xml_file in get_files_list_in_zip(zip_file, '.xml')],
-                     sort=True, join='outer', ignore_index=False).reset_index(drop=True)
+                     sort=True, join='outer', ignore_index=True)
 
 
 def read_xml_files_in_double_zip_as_dataframe(zip_file: ZipFile, root_key_list: Optional[list]=None, transpose: bool=False) -> pd.DataFrame:
