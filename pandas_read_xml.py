@@ -6,7 +6,7 @@ import requests
 import urllib
 from zipfile import ZipFile
 import json
-from typing import Callable, Iterator, Optional
+from typing import Callable, Iterator, Optional, List
 import collections
 
 # installed packages
@@ -18,7 +18,7 @@ import xmltodict
 # These are very general functions to read xml data as dataframes
 
 
-def get_to_root_in_dict(the_dict: dict, root_key_list: Optional[list]=None) -> dict:
+def get_to_root_in_dict(the_dict: dict, root_key_list: Optional[List[str]]=None) -> dict:
     if not root_key_list:
         return the_dict
     elif len(root_key_list) > 1:
@@ -27,7 +27,7 @@ def get_to_root_in_dict(the_dict: dict, root_key_list: Optional[list]=None) -> d
         return the_dict[root_key_list[0]]
 
 
-def read_xml_as_dataframe(xml: str, root_key_list: Optional[list]=None, transpose: bool=False) -> pd.DataFrame:
+def read_xml_as_dataframe(xml: str, root_key_list: Optional[List[str]]=None, transpose: bool=False) -> pd.DataFrame:
     if transpose:
         return pd.DataFrame(get_to_root_in_dict(xmltodict.parse(xml), root_key_list)).T
     else:
@@ -45,7 +45,7 @@ def get_zip_file_from_url(zip_url: str) -> ZipFile:
     return ZipFile(io.BytesIO(requests.get(zip_url).content))
 
 
-def get_files_list_in_zip(zip_file: ZipFile, file_extension: str) -> list:
+def get_files_list_in_zip(zip_file: ZipFile, file_extension: str) -> List[str]:
     return [x for x in zip_file.namelist() if x.endswith(file_extension)]
 
 
@@ -67,13 +67,13 @@ def get_zip_in_zip(zip_file: ZipFile, zip_file_name: str) -> ZipFile:
     return ZipFile(io.BytesIO(zip_file.read(zip_file_name)))
     
 
-def read_xml_files_in_zip_as_dataframe(zip_file: ZipFile, root_key_list: Optional[list]=None, transpose: bool=False) -> pd.DataFrame:
+def read_xml_files_in_zip_as_dataframe(zip_file: ZipFile, root_key_list: Optional[List[str]]=None, transpose: bool=False) -> pd.DataFrame:
     return pd.concat([read_xml_as_dataframe(read_xml_in_zip(zip_file, xml_file), root_key_list, transpose=transpose)
                       for xml_file in get_files_list_in_zip(zip_file, '.xml')],
                      sort=True, join='outer', ignore_index=True)
 
 
-def read_xml_files_in_double_zip_as_dataframe(zip_file: ZipFile, root_key_list: Optional[list]=None, transpose: bool=False) -> pd.DataFrame:
+def read_xml_files_in_double_zip_as_dataframe(zip_file: ZipFile, root_key_list: Optional[List[str]]=None, transpose: bool=False) -> pd.DataFrame:
     return pd.concat([
         read_xml_files_in_zip_as_dataframe(
             get_zip_in_zip(zip_file, sub_zip_file),
@@ -83,21 +83,23 @@ def read_xml_files_in_double_zip_as_dataframe(zip_file: ZipFile, root_key_list: 
     ])
 
 
-def read_xml(path: str, root_key_list: Optional[list]=None, transpose: bool=False) -> pd.DataFrame:
-    if urllib.parse.urlparse(path).scheme in ['http', 'https']:
-        if path.endswith('.xml'):
-            return read_xml_as_dataframe(read_xml_from_url(path), root_key_list, transpose=transpose)
-        elif path.endswith('.zip'):
-            with get_zip_file_from_url(path) as zf:
+def read_xml(path_or_xml: str, root_key_list: Optional[List[str]]=None, transpose: bool=False) -> pd.DataFrame:
+    if not (path_or_xml.endswith('.zip') or path_or_xml.endswith('.xml')):
+        return read_xml_as_dataframe(path_or_xml, root_key_list, transpose=transpose)
+    elif urllib.parse.urlparse(path_or_xml).scheme in ['http', 'https']:
+        if path_or_xml.endswith('.xml'):
+            return read_xml_as_dataframe(read_xml_from_url(path_or_xml), root_key_list, transpose=transpose)
+        elif path_or_xml.endswith('.zip'):
+            with get_zip_file_from_url(path_or_xml) as zf:
                 if len(get_files_list_in_zip(zf, '.xml')) > 0:
                     return read_xml_files_in_zip_as_dataframe(zf, root_key_list, transpose=transpose)
                 elif len(get_files_list_in_zip(zf, '.zip')) > 0:
                     return read_xml_files_in_double_zip_as_dataframe(zf, root_key_list, transpose=transpose)
     else:
-        if path.endswith('.xml'):
-            return read_xml_as_dataframe(read_xml_from_path(path), root_key_list)
-        elif path.endswith('.zip'):
-            with get_zip_file_from_path(path) as zf:
+        if path_or_xml.endswith('.xml'):
+            return read_xml_as_dataframe(read_xml_from_path(path_or_xml), root_key_list)
+        elif path_or_xml.endswith('.zip'):
+            with get_zip_file_from_path(path_or_xml) as zf:
                 if len(get_files_list_in_zip(zf, '.xml')) > 0:
                     return read_xml_files_in_zip_as_dataframe(zf, root_key_list, transpose=transpose)
                 elif len(get_files_list_in_zip(zf, '.zip')) > 0:
@@ -157,23 +159,23 @@ def flatten(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def action_required(df: pd.DataFrame, key_columns: list=[]) -> bool:
+def action_required(df: pd.DataFrame, key_columns: List[str]=[]) -> bool:
     return any(determine_flatten_action_for_column(df, column) != do_nothing
                for column in df.columns if column not in key_columns)
 
 
-def action_recommended(df: pd.DataFrame, key_columns: list=[]) -> bool:
+def action_recommended(df: pd.DataFrame, key_columns: List[str]=[]) -> bool:
     return all(determine_flatten_action_for_column(df, column) != do_nothing
                for column in df.columns if column not in key_columns)
 
 
-def auto_flatten(df: pd.DataFrame, key_columns: list=[]) -> pd.DataFrame:
+def auto_flatten(df: pd.DataFrame, key_columns: List[str]=[]) -> pd.DataFrame:
     while action_recommended(df, key_columns):
         df = flatten(df)
     return df
 
 
-def fully_flatten(df: pd.DataFrame, key_columns: list=[]) -> pd.DataFrame:
+def fully_flatten(df: pd.DataFrame, key_columns: List[str]=[]) -> pd.DataFrame:
     while action_required(df, key_columns):
         df = flatten(df)
     return df
@@ -198,7 +200,7 @@ def list_separate_tables(df: pd.DataFrame) -> list:
                 if determine_flatten_action_for_column(df, column).__name__ != "do_nothing"]
 
 
-def auto_separate_tables(df: pd.DataFrame, key_columns: list) -> dict:
+def auto_separate_tables(df: pd.DataFrame, key_columns: List[str]) -> dict:
     data = {}
     main = df.pipe(auto_flatten, key_columns)
     main_table_name = list_separate_tables(main)[0].split('|')[0]
