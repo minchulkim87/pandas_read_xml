@@ -84,26 +84,28 @@ def read_xml_files_in_double_zip_as_dataframe(zip_file: ZipFile, root_key_list: 
 
 
 def read_xml(path_or_xml: str, root_key_list: Optional[List[str]]=None, transpose: bool=False) -> pd.DataFrame:
-    if not (path_or_xml.endswith('.zip') or path_or_xml.endswith('.xml')):
-        return read_xml_as_dataframe(path_or_xml, root_key_list, transpose=transpose)
-    elif urllib.parse.urlparse(path_or_xml).scheme in ['http', 'https']:
-        if path_or_xml.endswith('.xml'):
-            return read_xml_as_dataframe(read_xml_from_url(path_or_xml), root_key_list, transpose=transpose)
-        elif path_or_xml.endswith('.zip'):
+    if urllib.parse.urlparse(path_or_xml).scheme in ['http', 'https']:
+        if path_or_xml.endswith('.zip'):
             with get_zip_file_from_url(path_or_xml) as zf:
                 if len(get_files_list_in_zip(zf, '.xml')) > 0:
                     return read_xml_files_in_zip_as_dataframe(zf, root_key_list, transpose=transpose)
                 elif len(get_files_list_in_zip(zf, '.zip')) > 0:
                     return read_xml_files_in_double_zip_as_dataframe(zf, root_key_list, transpose=transpose)
+        elif path_or_xml.endswith('.xml'):
+            return read_xml_as_dataframe(read_xml_from_url(path_or_xml), root_key_list, transpose=transpose)
+        else:
+            return read_xml_as_dataframe(read_xml_from_url(path_or_xml), root_key_list, transpose=transpose)
     else:
-        if path_or_xml.endswith('.xml'):
-            return read_xml_as_dataframe(read_xml_from_path(path_or_xml), root_key_list)
-        elif path_or_xml.endswith('.zip'):
+        if path_or_xml.endswith('.zip'):
             with get_zip_file_from_path(path_or_xml) as zf:
                 if len(get_files_list_in_zip(zf, '.xml')) > 0:
                     return read_xml_files_in_zip_as_dataframe(zf, root_key_list, transpose=transpose)
                 elif len(get_files_list_in_zip(zf, '.zip')) > 0:
                     return read_xml_files_in_double_zip_as_dataframe(zf, root_key_list, transpose=transpose)
+        elif path_or_xml.endswith('.xml'):
+            return read_xml_as_dataframe(read_xml_from_path(path_or_xml), root_key_list)
+        else:
+            return read_xml_as_dataframe(path_or_xml, root_key_list)
 
 
 # These are general functions to help deal with the tree-like structure (XML, JSON) that was read into the dataframe
