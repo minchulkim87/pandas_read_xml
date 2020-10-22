@@ -49,8 +49,8 @@ def get_files_list_in_zip(zip_file: ZipFile, file_extension: str) -> List[str]:
     return [x for x in zip_file.namelist() if x.endswith(file_extension)]
 
 
-def read_xml_from_path(path: str) -> str:
-    with open(path, 'r') as xf:
+def read_xml_from_path(path: str, encoding: Optional[str]=None) -> str:
+    with open(path, 'r', encoding=encoding) as xf:
         return xf.read()
 
 
@@ -83,7 +83,7 @@ def read_xml_files_in_double_zip_as_dataframe(zip_file: ZipFile, root_key_list: 
     ])
 
 
-def read_xml(path_or_xml: str, root_key_list: Optional[List[str]]=None, transpose: bool=False) -> pd.DataFrame:
+def read_xml(path_or_xml: str, root_key_list: Optional[List[str]]=None, transpose: bool=False, encoding: Optional[str]=None) -> pd.DataFrame:
     if urllib.parse.urlparse(path_or_xml).scheme in ['http', 'https']:
         if path_or_xml.endswith('.zip'):
             with get_zip_file_from_url(path_or_xml) as zf:
@@ -103,7 +103,7 @@ def read_xml(path_or_xml: str, root_key_list: Optional[List[str]]=None, transpos
                 elif len(get_files_list_in_zip(zf, '.zip')) > 0:
                     return read_xml_files_in_double_zip_as_dataframe(zf, root_key_list, transpose=transpose)
         elif path_or_xml.endswith('.xml'):
-            return read_xml_as_dataframe(read_xml_from_path(path_or_xml), root_key_list)
+            return read_xml_as_dataframe(read_xml_from_path(path_or_xml, encoding=encoding), root_key_list)
         else:
             return read_xml_as_dataframe(path_or_xml, root_key_list)
 
