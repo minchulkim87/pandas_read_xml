@@ -11,6 +11,8 @@ pyarrow = "*"
 pandas = "*"
 xmltodict = "*"
 requests = "*"
+zipfile36 = "*"
+distlib = "*"
 
 [requires]
 python_version = "3.7"

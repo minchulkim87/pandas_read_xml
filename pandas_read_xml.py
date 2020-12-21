@@ -4,10 +4,14 @@ import os
 import sys
 import requests
 import urllib
-from zipfile import ZipFile
 import json
 from typing import Callable, Iterator, Optional, List
 import collections
+
+if sys.version_info >= (3, 6):
+    from zipfile import ZipFile
+else:
+    from zipfile36 import ZipFile
 
 # installed packages
 import pandas as pd
