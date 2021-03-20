@@ -128,7 +128,7 @@ def normalise(df: pd.DataFrame, column: str) -> pd.DataFrame:
     return (df
             .reset_index(drop=True)
             .join(json_normalize(df[column], sep='|', max_level=0)
-                  .add_prefix(column+'|'))
+                  .add_prefix(str(column)+'|'))
             .drop(columns=[column]))
 
 

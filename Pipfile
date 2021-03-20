@@ -13,6 +13,7 @@ xmltodict = "*"
 requests = "*"
 zipfile36 = "*"
 distlib = "*"
+urllib3 = ">=1.26.3"
 
 [requires]
 python_version = "3.7"
