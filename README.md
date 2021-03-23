@@ -64,17 +64,6 @@ df = pdx.read_xml("test.xml", ['first-tag', 'second-tag', 'the-tag-you-want-as-r
 
 *Sometimes, the XML structure is such that pandas will treat rows vs columns in a way that we think are opposites. For these cases, the read_xml may fail. Try using `transpose=True` as an argument in such cases.
 
-### Real example.
-
-Here is a real example taken from USPTO. It is one of their "daily diff" files for the US trademark applications data.
-
-```python
-test_zip_path = 'https://bulkdata.uspto.gov/data/trademark/dailyxml/applications/apc200219.zip'
-root_key_list = ['trademark-applications-daily', 'application-information', 'file-segments', 'action-keys']
-
-df = pdx.read_xml(test_zip_path, root_key_list)
-```
-
 # Auto Flatten
 
 The real cumbersome part of working with XML data (or JSON data) is that they do not represent a single table. Rather, they are a (nested) tree representations of what probably were relational databases. Often, these XML data are exported without a clearly documented schema, and more often, no clear way of navigating the data.
@@ -85,17 +74,9 @@ Pandas already has some tools to help "explode" (items in list become separate r
 
 So, in this tool, I have also attempted to make a few different tools to separate the relational tables.
 
-A quick example from the same dataframe from USPTO above:
+See the example in Colab (or run the notebook elsewhere)
 
-```python
-from pandas_read_xml import auto_separate_tables
-
-key_columns = ['action-key', 'case-file|serial-number']
-
-data = df.pipe(auto_separate_tables, key_columns)
-```
-
-will separate out what the `auto_separate_tables` function guesses to be separate tables. The resulting `data` is a dictionary where the keys are the "table names" and the corresponding values are the pandas dataframes. Each of the separate tables will have the `key_columns` as common columns.
+The `auto_separate_tables` method will separate out what it guesses to be separate tables. The resulting `data` is a dictionary where the keys are the "table names" and the corresponding values are the pandas dataframes. Each of the separate tables will have the `key_columns` as common columns.
 
 You can see the list of separated tables by using python dictionary methods.
 
@@ -103,11 +84,7 @@ You can see the list of separated tables by using python dictionary methods.
 data.keys()
 ```
 
-And then view a table.
-
-```python
-data['classifications']
-```
+And then view the table of interest.
 
 There are also other "smaller" functions that does parts of the job:
 
