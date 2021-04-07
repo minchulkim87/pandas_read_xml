@@ -139,10 +139,16 @@ def mixed_explode(df: pd.DataFrame, column: str) -> pd.DataFrame:
 
 def mixed_normalise(df: pd.DataFrame, column: str) -> pd.DataFrame:
     normalisable = df[column].apply(lambda x: (type(x)==dict) | (type(x)==collections.OrderedDict))
-    return pd.concat([df.loc[normalisable, :].pipe(normalise, column),
-                      df.loc[~normalisable, :]],
-                     sort=True,
-                     join='outer').drop(columns=[column]).reset_index(drop=True)
+    if df.loc[~normalisable, column].isna().all():
+        return pd.concat([df.loc[normalisable, :].pipe(normalise, column),
+                          df.loc[~normalisable, :]],
+                         sort=True,
+                         join='outer').drop(columns=[column]).reset_index(drop=True)
+    else:
+        return pd.concat([df.loc[normalisable, :].pipe(normalise, column),
+                          df.loc[~normalisable, :]],
+                         sort=True,
+                         join='outer').reset_index(drop=True)
 
 
 def determine_flatten_action_for_column(df: pd.DataFrame, column: str) -> Callable:
