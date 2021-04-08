@@ -2,7 +2,7 @@ from pathlib import Path
 from setuptools import setup
 from setuptools import find_packages
 
-version = "0.2.0"
+version = "0.3.0"
 description = "A tool to read XML files as pandas dataframes."
 
 source_root = Path(".")

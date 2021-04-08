@@ -176,7 +176,8 @@ def normalise(df: pd.DataFrame, column: str) -> pd.DataFrame:
             .reset_index(drop=True)
             .join(json_normalize(df[column], sep='|', max_level=0)
                   .add_prefix(str(column)+'|'))
-            .drop(columns=[column]))
+            .drop(columns=[column])
+            .rename(columns={f'{column}|#text': column}))
 
 
 def mixed_explode(df: pd.DataFrame, column: str) -> pd.DataFrame:
@@ -190,7 +191,7 @@ def mixed_normalise(df: pd.DataFrame, column: str) -> pd.DataFrame:
         return pd.concat([df.loc[normalisable, :].pipe(normalise, column),
                           df.loc[~normalisable, :]],
                          sort=True,
-                         join='outer').drop(columns=[column]).reset_index(drop=True)
+                         join='outer').drop(columns=[column]).rename(columns={f'{column}|#text': column}).reset_index(drop=True)
     else:
         return pd.concat([df.loc[normalisable, :].pipe(normalise, column),
                           df.loc[~normalisable, :]],
