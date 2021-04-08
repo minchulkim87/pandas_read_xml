@@ -191,7 +191,7 @@ def mixed_normalise(df: pd.DataFrame, column: str) -> pd.DataFrame:
         return pd.concat([df.loc[normalisable, :].pipe(normalise, column),
                           df.loc[~normalisable, :]],
                          sort=True,
-                         join='outer').drop(columns=[column]).rename(columns={f'{column}|#text': column}).reset_index(drop=True)
+                         join='outer').pipe(lambda x: x.drop(columns=[column]) if x[column].isna().all() else x).reset_index(drop=True)
     else:
         return pd.concat([df.loc[normalisable, :].pipe(normalise, column),
                           df.loc[~normalisable, :]],
