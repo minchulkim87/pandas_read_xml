@@ -2,6 +2,10 @@
 
 A tool to help read XML files as pandas dataframes.
 
+Warning: Note that this isn't a mature or anything close to a complete solution. So I don't recommend using it in "production".
+
+Note: pandas 1.3+ will have read_xml. Once that is available, you shouldn't need this.
+
 See example in [Google Colab here](https://colab.research.google.com/github/minchulkim87/pandas_read_xml/blob/master/pandas_read_xml_example.ipynb)
 
 Isn't it annoying working with data in XML format? I think so. Take a look at this simple example.
